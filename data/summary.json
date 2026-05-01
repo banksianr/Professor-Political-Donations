@@ -1,0 +1,43 @@
+{
+  "rows_scanned": 3763949,
+  "rows_kept": 1902032,
+  "rows_excluded": 3660,
+  "unique_donors": 132242,
+  "total_donations": 1902032,
+  "total_amount": 292406765.0,
+  "dem_amount": 170542076.0,
+  "rep_amount": 7875954.0,
+  "oth_amount": 113988735.0,
+  "dem_to_rep_ratio": 21.65351346643213,
+  "cycles_covered": [
+    "2008",
+    "2012",
+    "2016",
+    "2020",
+    "2024",
+    "2026"
+  ],
+  "top_5_universities": [
+    {
+      "name": "Other higher-ed (not in top 150)",
+      "amount": 83868978.0
+    },
+    {
+      "name": "Harvard University",
+      "amount": 12416732.0
+    },
+    {
+      "name": "Stanford University",
+      "amount": 10000128.0
+    },
+    {
+      "name": "Columbia University",
+      "amount": 7778232.0
+    },
+    {
+      "name": "MIT",
+      "amount": 5423554.0
+    }
+  ],
+  "rows_no_canonical_university": 747814
+}

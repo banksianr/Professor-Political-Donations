@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Methodology · Professor Political Donations</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@400;700&family=IBM+Plex+Serif:wght@400;600;700&display=swap');
+    :root { --orange: #FF4F00; --gray: #121212; --grayLight: #1E1E1E; --timber: #D9D9D6; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--gray); color: #FFF; min-height: 100vh; }
+    body { font-family: "IBM Plex Serif", serif; line-height: 1.6; }
+
+    .header-bar { background: var(--grayLight); border-bottom: 2px solid var(--orange); }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 80px; padding: 0 32px; max-width: 1100px; margin: 0 auto; }
+    .brand-lockup { display: flex; align-items: center; gap: 16px; }
+    .brand-title { font-size: 20px; font-weight: 700; margin: 0; }
+    .brand-sub { font-family: "IBM Plex Sans", sans-serif; font-size: 10px; color: var(--timber); text-transform: uppercase; letter-spacing: 0.06em; margin: 4px 0 0; }
+    .back-link { font-family: "IBM Plex Sans", sans-serif; font-size: 12px; font-weight: 600; color: var(--orange); text-decoration: none; }
+    .back-link:hover { text-decoration: underline; }
+
+    .container { max-width: 800px; margin: 48px auto; padding: 0 32px 96px; }
+    h1, h2, h3 { font-family: "IBM Plex Serif", serif; line-height: 1.2; letter-spacing: -0.01em; }
+    h1 { font-size: 38px; font-weight: 700; margin: 0 0 8px; color: #FFF; }
+    h1 + .lede { font-family: "IBM Plex Sans", sans-serif; font-size: 16px; line-height: 1.5; color: var(--timber); margin: 0 0 32px; }
+    h2 { font-size: 24px; font-weight: 600; margin: 40px 0 12px; color: var(--orange); border-top: 2px solid var(--orange); padding-top: 16px; }
+    h3 { font-size: 18px; font-weight: 600; margin: 24px 0 8px; color: #FFF; }
+
+    p, li { font-family: "IBM Plex Serif", serif; font-size: 15px; line-height: 1.7; color: var(--timber); }
+    p code, li code { font-family: "IBM Plex Mono", monospace; font-size: 13px; background: var(--grayLight); border: 1px solid rgba(255,255,255,0.1); padding: 1px 6px; color: #FFF; }
+    pre { background: var(--grayLight); border: 1px solid rgba(255,255,255,0.1); border-left: 3px solid var(--orange); padding: 16px; overflow-x: auto; }
+    pre code { font-family: "IBM Plex Mono", monospace; font-size: 12px; line-height: 1.5; color: #FFF; }
+    strong { color: #FFF; font-weight: 700; }
+
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-family: "IBM Plex Sans", sans-serif; font-size: 13px; }
+    th { font-family: "IBM Plex Sans Condensed", sans-serif; text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px; text-align: left; padding: 10px 8px; border-bottom: 2px solid var(--orange); color: var(--orange); }
+    td { padding: 10px 8px; border-bottom: 1px solid rgba(255,255,255,0.08); color: var(--timber); vertical-align: top; }
+    td code { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: #FFF; }
+    td:nth-child(2), td:nth-child(3) { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+    a { color: var(--orange); }
+    .footer-bar { background: var(--grayLight); border-top: 2px solid var(--orange); margin-top: 64px; padding: 24px 32px; text-align: center; font-family: "IBM Plex Sans", sans-serif; font-size: 11px; color: var(--timber); }
+  </style>
+</head>
+<body>
+  <header class="header-bar">
+    <div class="header-inner">
+      <div class="brand-lockup">
+        <img src="logos/Lockup-White.svg" alt="Foundation for American Innovation" height="40" />
+        <div>
+          <div class="brand-title">Methodology</div>
+          <div class="brand-sub">Professor Political Donations</div>
+        </div>
+      </div>
+      <a class="back-link" href="./">← Back to dashboard</a>
+    </div>
+  </header>
+
+  <div class="container">
+    <h1>How the dashboard is built</h1>
+    <p class="lede">
+      Every classification choice that produces the figures on the dashboard is documented here. The goal is reproducibility:
+      a reader should be able to follow the chain from a single FEC Schedule A row to the bar in the chart.
+    </p>
+
+    <h2>Source data</h2>
+    <p>
+      The dataset is the <strong>FEC Individual Contributions</strong> files (Schedule A, <code>itcont.txt</code> from <code>indivYY.zip</code>)
+      released through the FEC bulk data portal at <a href="https://www.fec.gov/data/browse-data/?tab=bulk-data">fec.gov/data/browse-data</a>.
+      We use the cycles <strong>2008, 2012, 2016, 2020, 2024, and 2026</strong>. Midterm cycles (2010, 2014, 2018, 2022) are
+      <strong>not</strong> included — this is a limitation of the upstream extraction run, not a deliberate choice. The 2026 cycle
+      is still in progress.
+    </p>
+    <p>
+      Committee party labels come from the FEC Committee Master file (<code>cm.txt</code>). ActBlue and WinRed conduit
+      committees are mapped to <code>DEM</code> and <code>REP</code> respectively; recipient committees with no clear
+      party flag fall into <code>OTH</code>.
+    </p>
+    <p>
+      The starting universe is a 1.7 GB intermediate CSV that pre-filters Schedule A rows where the donor's
+      <code>employer</code> field contains a higher-ed term (e.g. <code>UNIVERSITY</code>, <code>COLLEGE</code>,
+      <code>INSTITUTE OF TECHNOLOGY</code>, <code>SCHOOL OF MEDICINE</code>) or matches a known higher-ed alias
+      (<code>MIT</code>, <code>CALTECH</code>, <code>UCLA</code>, etc.). This means: <strong>every row analyzed here is
+      from a donor who self-reported a university or college as their employer.</strong>
+    </p>
+
+    <h2>What counts as a "professor"</h2>
+    <p>
+      The challenge: there is no FEC field for "is this person a professor." The <code>occupation</code> field is a free-text
+      self-report. We use it directly, with a curated inclusion list. Each term below is justified individually.
+    </p>
+
+    <h3>Strictly included (formally faculty)</h3>
+    <table>
+      <thead><tr><th>Occupation</th><th>Rows</th><th>Total $</th><th>Justification</th></tr></thead>
+      <tbody>
+        <tr><td><code>PROFESSOR</code></td><td>1,193,799</td><td>$198.9M</td><td>The base case. Anyone using this term at a university is faculty.</td></tr>
+        <tr><td><code>COLLEGE PROFESSOR</code></td><td>51,380</td><td>$5.2M</td><td>Same as above; common at liberal arts schools.</td></tr>
+        <tr><td><code>LAW PROFESSOR</code></td><td>30,887</td><td>$9.1M</td><td>Faculty in law schools — disproportionately high giving per capita.</td></tr>
+        <tr><td><code>INSTRUCTOR</code></td><td>40,499</td><td>$3.9M</td><td>Instructional faculty (often non-tenure track). Distinct from K-12 "TEACHER".</td></tr>
+        <tr><td><code>ASSOCIATE PROFESSOR</code></td><td>37,841</td><td>$3.1M</td><td>Tenure-track second-rank faculty.</td></tr>
+        <tr><td><code>FACULTY</code></td><td>30,047</td><td>$5.0M</td><td>Generic self-description; reliable when employer is higher-ed.</td></tr>
+        <tr><td><code>LECTURER</code></td><td>28,317</td><td>$5.0M</td><td>Instructional appointment, often full-time.</td></tr>
+        <tr><td><code>UNIVERSITY PROFESSOR</code></td><td>25,188</td><td>$2.6M</td><td>Honorific senior rank at many institutions.</td></tr>
+        <tr><td><code>ADJUNCT PROFESSOR</code></td><td>23,456</td><td>$4.6M</td><td>Part-time / contract faculty — included as part of the academic labor market.</td></tr>
+        <tr><td><code>PROFESSOR EMERITUS</code></td><td>20,868</td><td>$2.2M</td><td>Retired faculty who retain academic identity and often continue research.</td></tr>
+        <tr><td><code>ASSISTANT PROFESSOR</code></td><td>20,468</td><td>$2.5M</td><td>Tenure-track entry rank.</td></tr>
+        <tr><td><code>COLLEGE INSTRUCTOR</code></td><td>12,663</td><td>$0.5M</td><td>Two-year and four-year college instructional faculty.</td></tr>
+        <tr><td><code>RESEARCH PROFESSOR</code></td><td>5,645</td><td>$1.5M</td><td>Research-track faculty (typically soft-money, no teaching).</td></tr>
+        <tr><td><code>ADJUNCT FACULTY</code></td><td>11,307</td><td>$0.6M</td><td>Variant of <code>ADJUNCT PROFESSOR</code>.</td></tr>
+        <tr><td><code>ADJUNCT INSTRUCTOR</code></td><td>7,427</td><td>$0.5M</td><td>Same as above.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Broadly included (with care)</h3>
+    <p>
+      These terms are included because faculty commonly use them, but they're more ambiguous. Each is gated on the employer
+      also being a higher-ed institution (which is already enforced upstream).
+    </p>
+    <table>
+      <thead><tr><th>Occupation</th><th>Rows</th><th>Total $</th><th>Justification</th></tr></thead>
+      <tbody>
+        <tr><td><code>ACADEMIC</code></td><td>13,901</td><td>$1.8M</td><td>Common humanities/social-sciences self-description. <strong>Edge case:</strong> "ACADEMIC ADVISOR" (4,705 rows) gets matched by phrase logic — these are administrators, not faculty. We accept this limitation rather than build a long exclusion list of compound terms.</td></tr>
+        <tr><td><code>RESEARCHER</code></td><td>25,870</td><td>$4.0M</td><td>Ambiguous: could be faculty researcher, postdoc, staff scientist, or industry researcher. Limiting to higher-ed employers excludes pharma/tech researchers but still includes university research staff who are not faculty (e.g. lab managers). We err on the side of inclusion.</td></tr>
+        <tr><td><code>RESEARCH SCIENTIST</code></td><td>11,998</td><td>$1.8M</td><td>Common research-track appointment at universities; also a job title for non-faculty staff scientists.</td></tr>
+        <tr><td><code>POSTDOCTORAL</code> / <code>POST DOC</code> / <code>POSTDOC</code></td><td>—</td><td>—</td><td>Postdocs sit between graduate student and faculty. Many institutions classify them as trainees, others as faculty. We include them as the early-career faculty pipeline.</td></tr>
+        <tr><td><code>PRINCIPAL INVESTIGATOR</code></td><td>—</td><td>—</td><td>The PI title typically requires a faculty appointment. Phrase matching is conservative — bare "PI" is not matched (too noisy).</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Explicitly excluded</h3>
+    <table>
+      <thead><tr><th>Excluded term</th><th>Rationale</th></tr></thead>
+      <tbody>
+        <tr><td><code>STUDENT</code>, <code>GRADUATE STUDENT</code>, <code>PHD STUDENT</code></td><td>Pre-faculty.</td></tr>
+        <tr><td><code>TEACHING ASSISTANT</code>, <code>TA</code>, <code>RESEARCH ASSISTANT</code></td><td>Student employees.</td></tr>
+        <tr><td><code>TEACHER</code> (137K rows)</td><td>Predominantly K-12. Higher-ed faculty almost always self-describe as <code>PROFESSOR</code>, <code>LECTURER</code>, or <code>FACULTY</code> — not <code>TEACHER</code>.</td></tr>
+        <tr><td><code>EDUCATOR</code> (77K rows)</td><td>Too ambiguous: K-12 teachers, college administrators, and ed-tech professionals all use this term.</td></tr>
+        <tr><td><code>KINDERGARTEN TEACHER</code>, <code>HIGH SCHOOL TEACHER</code>, etc.</td><td>K-12 — explicitly outside scope.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Why not stricter?</h3>
+    <p>
+      A stricter "tenure-track only" filter would miss the 28K-row <code>LECTURER</code> population, adjuncts, postdocs, and emeritus faculty —
+      all of whom are part of the academic labor market and politically active. The dashboard explicitly trades a small false-positive
+      rate (a research staff member or an "academic advisor" misclassified as faculty) for completeness on the labor-market side.
+    </p>
+
+    <h2>Faculty rank classification</h2>
+    <p>
+      Each donation is assigned exactly one rank, using the donor's normalized occupation string. <strong>Order matters</strong>:
+      the first matching rule wins, so <code>ASSISTANT PROFESSOR</code> is matched as <em>Assistant</em> before falling
+      through to the generic <em>Full Professor</em> rule on <code>PROFESSOR</code>.
+    </p>
+    <pre><code>Emeritus         ← EMERITUS, EMERITA, PROF EMERITUS
+Adjunct          ← ADJUNCT
+Assistant        ← ASSISTANT PROFESSOR, ASST PROF
+Associate        ← ASSOCIATE PROFESSOR, ASSOC PROF
+Lecturer         ← LECTURER
+Instructor       ← INSTRUCTOR
+Postdoc          ← POSTDOCTORAL, POST DOC, POSTDOC
+Research Faculty ← RESEARCH PROFESSOR, RESEARCH SCIENTIST, PRINCIPAL INVESTIGATOR
+Full Professor   ← PROFESSOR, FULL PROFESSOR, UNIVERSITY PROFESSOR, DISTINGUISHED PROFESSOR
+Other Faculty    ← FACULTY, ACADEMIC, PROF (catch-all)</code></pre>
+    <p>
+      The <em>Full Professor</em> bucket catches anyone who self-describes as <code>PROFESSOR</code> without a more specific
+      rank prefix — this is by far the largest group, and includes both true full-rank professors and donors who simply omit
+      their rank. The chart's <em>Full Professor</em> bar should be read as "self-described professor, no rank specified."
+    </p>
+
+    <h2>University normalization</h2>
+    <p>
+      The donor's <code>employer</code> field is free-text. "Stanford University", "Stanford U.", "Stanford Department of
+      Economics", "Stanford GSB", and "Stanford Medical School" all appear separately in the raw data. We collapse these to
+      a single canonical name <em>Stanford University</em> using a curated lookup table of 150 institutions: all R1 research
+      universities, the Ivies and peers, prominent liberal arts colleges, well-known professional schools, and a sample of
+      HBCUs and minority-serving institutions.
+    </p>
+    <p>The matching rule is:</p>
+    <ol>
+      <li>Uppercase the employer string and strip non-alphanumeric characters.</li>
+      <li>For each canonical institution, check whether any of its associated patterns appears as a whole phrase (with word boundaries) in the normalized string.</li>
+      <li>The first match wins. Patterns are ordered most-specific first, so <code>UC BERKELEY</code> is checked before any plain <code>BERKELEY</code> pattern would be.</li>
+    </ol>
+    <p>
+      A donation whose employer doesn't match any of the 150 canonicals is bucketed into
+      <strong><code>Other higher-ed (not in top 150)</code></strong>. In the current data, this represents
+      <strong>39% of all professor donations and ~$84M in dollars</strong> — the long tail of US higher education
+      (community colleges, regional state schools, religious institutions, smaller liberal arts colleges, professional schools
+      outside the top 150). This bucket is excluded from the "Top 30 Universities" chart but included in cycle, rank, state,
+      and donor aggregates.
+    </p>
+
+    <h2>Donor "lean" classification</h2>
+    <p>The "Lean" column in the top-donors table follows this rule:</p>
+    <ol>
+      <li>Sum each donor's lifetime DEM dollars and REP dollars.</li>
+      <li>Let <code>partisan = DEM + REP</code>. If <code>partisan == 0</code>, lean is <code>OTH</code>.</li>
+      <li>If <code>DEM ≥ 2 × REP</code> <strong>and</strong> <code>DEM / partisan ≥ 0.667</code>, lean is <code>DEM</code>.</li>
+      <li>Mirror rule for <code>REP</code>.</li>
+      <li>Otherwise lean is <code>OTH</code>.</li>
+    </ol>
+    <p>This is a conservative donor-level label that puts mixed, bipartisan, and trade-association givers in <code>OTH</code>.</p>
+
+    <h2>What the dashboard does <em>not</em> do</h2>
+    <ul>
+      <li><strong>No name disambiguation.</strong> A professor who appears at two institutions during the period is counted twice — once at each.</li>
+      <li><strong>No earmark resolution.</strong> Earmark targets recorded in FEC memo fields are not used to redirect contributions; we use the recorded recipient committee. Some ActBlue contributions appear as <code>DEM</code> rather than being attributed to the specific candidate.</li>
+      <li><strong>No K-12 inclusion.</strong> Higher-ed only.</li>
+      <li><strong>No undergraduate or graduate student inclusion.</strong></li>
+      <li><strong>No verification of occupation.</strong> Self-reported text only.</li>
+      <li><strong>No PAC or non-individual contributions.</strong> Schedule A only — itemized individual donations to federal committees.</li>
+    </ul>
+
+    <h2>Reproducibility</h2>
+    <pre><code># 1. Run the upstream university-employee FEC extraction (already done):
+#    Uni Political Donations/Uni Political Donations/scripts/university_employee_donations.py
+
+# 2. Run the dashboard prep:
+python3 scripts/extract_professor_donations.py
+
+# 3. Build the dashboard:
+npm install
+npm run build</code></pre>
+    <p>
+      The aggregated CSVs in <code>public/data/</code> total under 250 KB and are regenerable from the raw 1.7 GB file in under
+      three minutes on a modern laptop. The full source code is at
+      <a href="https://github.com/banksianr/Professor-Political-Donations">github.com/banksianr/Professor-Political-Donations</a>.
+    </p>
+  </div>
+
+  <footer class="footer-bar">
+    Foundation for American Innovation · Source: FEC Schedule A bulk data
+  </footer>
+</body>
+</html>
